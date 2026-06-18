@@ -1,8 +1,8 @@
 from database import Base, engine
 from fastapi import FastAPI
-from routes.boards import router as boards_router
-from routes.tasks import router as tasks_router
-from routes.users import router as users_router
+from routes.board import router as board_router
+from routes.task import router as task_router
+from routes.user import router as user_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -10,6 +10,6 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-app.include_router(boards_router)
-app.include_router(tasks_router)
-app.include_router(users_router)
+app.include_router(board_router)
+app.include_router(task_router)
+app.include_router(user_router)
