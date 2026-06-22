@@ -1,0 +1,7 @@
+## Common business rules
+
+- [ ] Only users with access to the board can alter it (create/read/update/delete) tasks.
+- [ ] Implement two user roles: viewer and editor.
+- [ ] Add endpoint to reassign task to different user.
+- [ ] Add "column" entity. One-to-many relation with "task" (one column can have many tasks, FK lives in the task).
+- [ ] Adapt board to reference columns instead of tasks. One-to-many relation between "board" and "column" (one board can have many columns, FK lives in the column).

@@ -7,6 +7,7 @@ class TaskService:
     def __init__(self, repository: TaskRepository):
         self.repository = repository
 
+    # Basic CRUD
     def get_task(self, id: int) -> TaskModel | None:
         return self.repository.get_task(id)
 

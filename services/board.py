@@ -7,6 +7,7 @@ class BoardService:
     def __init__(self, repository: BoardRepository):
         self.repository = repository
 
+    # Basic CRUD
     def get_board(self, id: int) -> BoardModel | None:
         return self.repository.get_board(id)
 

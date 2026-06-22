@@ -7,6 +7,7 @@ class UserService:
     def __init__(self, repository: UserRepository):
         self.repository = repository
 
+    # Basic CRUD
     def get_user(self, id: int) -> UserModel | None:
         return self.repository.get_user(id)
 
