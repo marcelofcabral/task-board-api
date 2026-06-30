@@ -13,6 +13,9 @@ class UserRepository:
     def get_user(self, id: int) -> UserModel | None:
         return self.db.get(UserModel, id)
 
+    def get_user_by_username(self, username: str) -> UserModel | None:
+        return self.db.scalar(select(UserModel).where(UserModel.username == username))
+
     def list_users(self) -> list[UserModel]:
         return list(self.db.scalars(select(UserModel)).all())
 
