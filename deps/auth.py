@@ -26,7 +26,7 @@ def get_auth_service(
 
 
 def get_login_data(
-    form_data: OAuth2PasswordRequestForm,
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> LoginResult:
     login_result = auth_service.login(form_data)
