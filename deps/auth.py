@@ -5,10 +5,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from auth import oauth2_scheme
 from auth.types import LoginResult
-from deps.user import get_user_repository
+from deps.user import get_user_service
 from models import UserModel
-from repositories import UserRepository
-from services import AuthService
+from services import AuthService, UserService
 
 
 def get_unauthorized_exception(detail: str):
@@ -20,9 +19,9 @@ def get_unauthorized_exception(detail: str):
 
 
 def get_auth_service(
-    user_repository: Annotated[UserRepository, Depends(get_user_repository)],
+    user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> AuthService:
-    return AuthService(user_repository)
+    return AuthService(user_service)
 
 
 def get_login_data(

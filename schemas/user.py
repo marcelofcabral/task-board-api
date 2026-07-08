@@ -10,8 +10,10 @@ class UserBase(BaseModel):
     birth: datetime
 
 
+# internal schema: only used indirectly by the registration route
+# (route handler -> auth service -> user service -> user repo)
 class UserCreate(UserBase):
-    pass
+    hashed_password: str
 
 
 class UserUpdate(BaseModel):
@@ -19,5 +21,6 @@ class UserUpdate(BaseModel):
     birth: datetime | None = None
 
 
+# excludes the hashed password from the response body via the routes' response_model
 class UserResponse(UserBase, ResponseSchemaBase):
     pass

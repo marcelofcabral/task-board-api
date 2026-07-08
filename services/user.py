@@ -11,6 +11,9 @@ class UserService:
     def get_user(self, id: int) -> UserModel | None:
         return self.repository.get_user(id)
 
+    def get_user_by_username(self, username: str) -> UserModel | None:
+        return self.repository.get_user_by_username(username)
+
     def list_users(self) -> list[UserModel]:
         return self.repository.list_users()
 

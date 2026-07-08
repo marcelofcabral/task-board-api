@@ -5,15 +5,32 @@ from models import BoardModel, TaskModel, UserModel
 
 
 class UserModelAdmin(ModelView, model=UserModel):
-    pass
+    column_list = [
+        UserModel.id,
+        UserModel.username,
+        UserModel.birth,
+        UserModel.created_at,
+    ]
+    column_details_exclude_list = [UserModel.tasks, UserModel.memberships]
 
 
 class TaskModelAdmin(ModelView, model=TaskModel):
-    pass
+    column_list = [
+        TaskModel.id,
+        TaskModel.title,
+        TaskModel.description,
+        TaskModel.user_id,
+        TaskModel.board_id,
+        TaskModel.created_at,
+    ]
 
 
 class BoardModelAdmin(ModelView, model=BoardModel):
-    pass
+    column_list = [
+        BoardModel.id,
+        BoardModel.title,
+        BoardModel.created_at,
+    ]
 
 
 def setup_admin(app):
