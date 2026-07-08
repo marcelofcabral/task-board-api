@@ -10,7 +10,7 @@ password_hasher = PasswordHash.recommended()
 
 
 class JwtPayloadInput(TypedDict):
-    sub: str  # should be the username for now
+    sub: str
 
 
 def get_hashed_password(password: str):

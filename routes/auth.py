@@ -26,7 +26,7 @@ async def login(
 ):
     user, token = login_data
 
-    return {"user": user, "access_token": token, "token_type": "JWT"}
+    return {"user": user, "access_token": token, "token_type": "Bearer"}
 
 
 @router.get("/me", response_model=UserResponse)

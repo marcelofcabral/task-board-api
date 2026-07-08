@@ -2,12 +2,15 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
+from deps.auth import get_auth_user
 from deps.task import get_all_tasks, get_task_or_404, get_task_service
 from models import TaskModel
 from schemas import TaskCreate, TaskResponse, TaskUpdate
 from services.task import TaskService
 
-router = APIRouter(prefix="/task", tags=["Tasks"])
+router = APIRouter(
+    prefix="/task", tags=["Tasks"], dependencies=[Depends(get_auth_user)]
+)
 
 
 # Read all tasks

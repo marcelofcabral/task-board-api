@@ -35,16 +35,18 @@ class AuthService:
     def get_auth_user(self, token: str) -> UserModel | None:
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
+            print(f"Payload is {payload}")
+            user_id: str | None = payload.get("sub")
 
-            if username is None:
+            if user_id is None:
                 return None
 
-            user = self.user_service.get_user_by_username(username)
+            user = self.user_service.get_user(int(user_id))
 
             return user
 
-        except InvalidTokenError:
+        except InvalidTokenError as exception:
+            print(f"Token validation failed: {type(exception).__name__}: {exception!r}")
             return None
 
     def register(self, registration_data: RegistrationData):
@@ -71,6 +73,6 @@ class AuthService:
         if not user:
             return None
 
-        token = generate_token({"sub": user.username})
+        token = generate_token({"sub": str(user.id)})
 
         return LoginResult(user, token)

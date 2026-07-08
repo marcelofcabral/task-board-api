@@ -2,12 +2,15 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
+from deps.auth import get_auth_user
 from deps.user import get_all_users, get_user_or_404, get_user_service
 from models import UserModel
 from schemas import UserCreate, UserResponse, UserUpdate
 from services import UserService
 
-router = APIRouter(prefix="/user", tags=["Users"])
+router = APIRouter(
+    prefix="/user", tags=["Users"], dependencies=[Depends(get_auth_user)]
+)
 
 
 # Read all users

@@ -1,21 +1,16 @@
 from __future__ import annotations
 
-import enum
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+from shared.types.board_member import BoardMemberRole
 
 if TYPE_CHECKING:
     from models.entities.board import BoardModel
     from models.entities.user import UserModel
-
-
-class BoardMemberRole(str, enum.Enum):
-    VIEWER = "viewer"
-    EDITOR = "editor"
 
 
 class BoardMemberModel(Base):

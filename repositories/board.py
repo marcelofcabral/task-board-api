@@ -15,12 +15,11 @@ class BoardRepository:
     def list_boards(self) -> list[BoardModel]:
         return list(self.db.scalars(select(BoardModel)).all())
 
-    def create_board(self, board: BoardCreate) -> BoardModel:
+    def add_board(self, board: BoardCreate) -> BoardModel:
         new_board = BoardModel(**board.model_dump())
 
         self.db.add(new_board)
-        self.db.commit()
-        self.db.refresh(new_board)
+        self.db.flush()
 
         return new_board
 
@@ -35,4 +34,7 @@ class BoardRepository:
 
     def delete_board(self, board: BoardModel) -> None:
         self.db.delete(board)
+        self.db.commit()
+
+    def commit(self) -> None:
         self.db.commit()

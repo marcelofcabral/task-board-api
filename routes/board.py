@@ -2,12 +2,15 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
+from deps.auth import get_auth_user
 from deps.board import get_all_boards, get_board_or_404, get_board_service
-from models import BoardModel
+from models import BoardModel, UserModel
 from schemas import BoardCreate, BoardResponse, BoardUpdate
 from services.board import BoardService
 
-router = APIRouter(prefix="/board", tags=["Boards"])
+router = APIRouter(
+    prefix="/board", tags=["Boards"], dependencies=[Depends(get_auth_user)]
+)
 
 
 # Read all boards
@@ -27,9 +30,11 @@ async def read_board(board: Annotated[BoardModel, Depends(get_board_or_404)]):
 # Create board
 @router.post("", response_model=BoardResponse, status_code=status.HTTP_201_CREATED)
 async def create_board(
-    board: BoardCreate, service: Annotated[BoardService, Depends(get_board_service)]
+    board: BoardCreate,
+    board_service: Annotated[BoardService, Depends(get_board_service)],
+    auth_user: Annotated[UserModel, Depends(get_auth_user)],
 ):
-    return service.create_board(board)
+    return board_service.create_board(board, auth_user)
 
 
 # Update board
@@ -37,15 +42,15 @@ async def create_board(
 async def update_board(
     board: Annotated[BoardModel, Depends(get_board_or_404)],
     updates: BoardUpdate,
-    service: Annotated[BoardService, Depends(get_board_service)],
+    board_service: Annotated[BoardService, Depends(get_board_service)],
 ):
-    return service.update_board(board, updates)
+    return board_service.update_board(board, updates)
 
 
 # Delete board
 @router.delete("/{id}")
 async def delete_board(
     board: Annotated[BoardModel, Depends(get_board_or_404)],
-    service: Annotated[BoardService, Depends(get_board_service)],
+    board_service: Annotated[BoardService, Depends(get_board_service)],
 ):
-    return service.delete_board(board)
+    return board_service.delete_board(board)

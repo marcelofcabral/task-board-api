@@ -44,6 +44,8 @@ def get_auth_user(
 ) -> UserModel:
     user = user_service.get_auth_user(token)
 
+    print(f"User is {user}")
+
     if not user:
         raise get_unauthorized_exception("Could not validate credentials")
 
