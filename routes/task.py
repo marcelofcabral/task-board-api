@@ -9,7 +9,7 @@ from schemas import TaskCreate, TaskResponse, TaskUpdate
 from services.task import TaskService
 
 router = APIRouter(
-    prefix="/task", tags=["Tasks"], dependencies=[Depends(get_auth_user)]
+    prefix="/tasks", tags=["Tasks"], dependencies=[Depends(get_auth_user)]
 )
 
 

@@ -9,7 +9,7 @@ from schemas import BoardCreate, BoardResponse, BoardUpdate
 from services.board import BoardService
 
 router = APIRouter(
-    prefix="/board", tags=["Boards"], dependencies=[Depends(get_auth_user)]
+    prefix="/boards", tags=["Boards"], dependencies=[Depends(get_auth_user)]
 )
 
 

@@ -9,7 +9,7 @@ from schemas import UserCreate, UserResponse, UserUpdate
 from services import UserService
 
 router = APIRouter(
-    prefix="/user", tags=["Users"], dependencies=[Depends(get_auth_user)]
+    prefix="/users", tags=["Users"], dependencies=[Depends(get_auth_user)]
 )
 
 
