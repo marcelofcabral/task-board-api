@@ -1,35 +1,26 @@
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
-from sqlalchemy.orm import Session
 
-from database import get_db
-from deps.board_member import get_board_member_service
-from models import BoardModel
-from repositories import BoardRepository
-from services import BoardMemberService, BoardService
+from deps.board_member import get_board_member_or_403
+from deps.service_factories import get_board_service
+from models import BoardMemberModel, BoardModel
+from services import BoardService
 
 
-def get_board_repository(db: Annotated[Session, Depends(get_db)]) -> BoardRepository:
-    return BoardRepository(db)
-
-
-def get_board_service(
-    repository: Annotated[BoardRepository, Depends(get_board_repository)],
-    board_member_service: Annotated[
-        BoardMemberService, Depends(get_board_member_service)
-    ],
-) -> BoardService:
-    return BoardService(repository, board_member_service)
-
-
-def get_board_or_404(
-    id: int, service: Annotated[BoardService, Depends(get_board_service)]
+# authorize first using get_board_member_or_403 and only then check if board exists and return it
+# this avoids leaking board IDs that exist or don't exist in the DB
+def get_authorized_board_or_404(
+    board_id: int,
+    _: Annotated[BoardMemberModel, Depends(get_board_member_or_403)],
+    service: Annotated[BoardService, Depends(get_board_service)],
 ) -> BoardModel:
-    board = service.get_board(id)
+    board = service.get_board(board_id)
 
     if board is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Board not found"
+        )
 
     return board
 

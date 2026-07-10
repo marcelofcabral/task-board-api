@@ -35,7 +35,6 @@ class AuthService:
     def get_auth_user(self, token: str) -> UserModel | None:
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            print(f"Payload is {payload}")
             user_id: str | None = payload.get("sub")
 
             if user_id is None:

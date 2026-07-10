@@ -1,4 +1,4 @@
-from models import BoardModel, UserModel
+from models import BoardModel
 from repositories import BoardRepository
 from schemas import BoardCreate, BoardMemberCreate, BoardUpdate
 from shared.types.board_member import BoardMemberRole
@@ -19,12 +19,12 @@ class BoardService:
     def list_boards(self) -> list[BoardModel]:
         return self.repository.list_boards()
 
-    def create_board(self, board: BoardCreate, creator: UserModel) -> BoardModel:
+    def create_board(self, board: BoardCreate, creator_id: int) -> BoardModel:
         new_board = self.repository.add_board(board)
 
         self.board_member_service.add_board_member(
             BoardMemberCreate(
-                user_id=creator.id, board_id=new_board.id, role=BoardMemberRole.EDITOR
+                user_id=creator_id, board_id=new_board.id, role=BoardMemberRole.EDITOR
             )
         )
 
