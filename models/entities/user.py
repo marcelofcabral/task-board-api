@@ -25,4 +25,4 @@ class UserModel(Base):
     )
 
     tasks: Mapped[list[TaskModel]] = relationship(back_populates="user")
-    memberships: Mapped[list[BoardMemberModel]] = relationship(back_populates="users")
+    memberships: Mapped[list[BoardMemberModel]] = relationship(back_populates="user")

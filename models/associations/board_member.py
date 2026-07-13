@@ -24,5 +24,5 @@ class BoardMemberModel(Base):
     )
     role: Mapped[BoardMemberRole] = mapped_column(String, nullable=False)
 
-    users: Mapped[list[UserModel]] = relationship(back_populates="memberships")
-    boards: Mapped[list[BoardModel]] = relationship(back_populates="members")
+    user: Mapped[UserModel] = relationship(back_populates="memberships")
+    board: Mapped[BoardModel] = relationship(back_populates="members")

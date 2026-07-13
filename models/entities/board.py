@@ -24,4 +24,4 @@ class BoardModel(Base):
     )
 
     tasks: Mapped[list[TaskModel]] = relationship(back_populates="board")
-    members: Mapped[list[BoardMemberModel]] = relationship(back_populates="boards")
+    members: Mapped[list[BoardMemberModel]] = relationship(back_populates="board")

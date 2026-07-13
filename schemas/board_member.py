@@ -1,14 +1,19 @@
-from dataclasses import dataclass
+from pydantic import BaseModel, Field
 
 from shared.types.board_member import BoardMemberRole
 
 
-@dataclass
-class BoardMemberCreate:
+class BoardMemberBase(BaseModel):
+    role: BoardMemberRole = Field(description="Board member role")
+
+
+class BoardMemberCreate(BoardMemberBase):
     user_id: int
-    board_id: int
-    role: BoardMemberRole
 
 
-class BoardMemberUpdate:
-    role: BoardMemberRole
+class BoardMemberUpdate(BoardMemberBase):
+    pass
+
+
+class BoardMemberResponse(BoardMemberCreate):
+    pass

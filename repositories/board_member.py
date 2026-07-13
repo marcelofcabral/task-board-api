@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from models import BoardMemberModel
-from schemas import BoardMemberCreate
+from schemas import BoardMemberCreate, BoardMemberUpdate
 from shared.types.board_member import BoardMemberRole
 
 
@@ -31,10 +31,13 @@ class BoardMemberRepository:
             )
         )
 
-    def add_board_member(self, board_member: BoardMemberCreate) -> BoardMemberModel:
+    # does not commit. Used by BoardService when creating a board and adding the creator as editor
+    def add_board_member(
+        self, board_member: BoardMemberCreate, board_id: int
+    ) -> BoardMemberModel:
         new_board_member = BoardMemberModel(
             user_id=board_member.user_id,
-            board_id=board_member.board_id,
+            board_id=board_id,
             role=board_member.role,
         )
 
@@ -42,10 +45,26 @@ class BoardMemberRepository:
 
         return new_board_member
 
-    def update_board_member(
-        self, board_member: BoardMemberModel, new_role: BoardMemberRole
+    # commits
+    def create_board_member(
+        self, board_member: BoardMemberCreate, board_id: int
     ) -> BoardMemberModel:
-        setattr(board_member, "role", new_role)
+        new_board_member = BoardMemberModel(
+            user_id=board_member.user_id,
+            board_id=board_id,
+            role=board_member.role,
+        )
+
+        self.db.add(new_board_member)
+        self.db.commit()
+        self.db.refresh(new_board_member)
+
+        return new_board_member
+
+    def update_board_member(
+        self, board_member: BoardMemberModel, updates: BoardMemberUpdate
+    ) -> BoardMemberModel:
+        setattr(board_member, "role", updates.role)
 
         self.db.commit()
         self.db.refresh(board_member)

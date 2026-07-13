@@ -3,11 +3,17 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from deps.auth import get_auth_user
-from deps.board import get_all_boards, get_authorized_board_or_404, get_board_service
-from deps.board_member import require_board_member_editor_role
+from deps.board.board import (
+    get_all_boards,
+    get_authorized_board_or_404,
+    get_board_service,
+)
+from deps.board.member import require_board_member_editor_role
 from models import BoardModel, UserModel
 from schemas import BoardCreate, BoardResponse, BoardUpdate
 from services.board import BoardService
+
+from .members import router as members_router
 
 # tasks are a subcollection of boards
 from .tasks import router as tasks_router
@@ -63,7 +69,7 @@ async def update_board(
 
 
 # Delete board
-@router.delete("/{id}")
+@router.delete("/{id}", dependencies=[Depends(require_board_member_editor_role)])
 async def delete_board(
     board: Annotated[BoardModel, Depends(get_authorized_board_or_404)],
     board_service: Annotated[BoardService, Depends(get_board_service)],
@@ -72,3 +78,4 @@ async def delete_board(
 
 
 router.include_router(tasks_router)
+router.include_router(members_router)

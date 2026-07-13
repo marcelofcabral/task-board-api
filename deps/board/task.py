@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from deps.board import get_authorized_board_or_404
+from deps.board.board import get_authorized_board_or_404
 from models import BoardModel, TaskModel
 from repositories import TaskRepository
 from services import TaskService

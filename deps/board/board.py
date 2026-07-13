@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 
-from deps.board_member import get_board_member_or_403
+from deps.board.member import get_auth_board_member_or_403
 from deps.service_factories import get_board_service
 from models import BoardMemberModel, BoardModel
 from services import BoardService
@@ -12,7 +12,7 @@ from services import BoardService
 # this avoids leaking board IDs that exist or don't exist in the DB
 def get_authorized_board_or_404(
     board_id: int,
-    _: Annotated[BoardMemberModel, Depends(get_board_member_or_403)],
+    _: Annotated[BoardMemberModel, Depends(get_auth_board_member_or_403)],
     service: Annotated[BoardService, Depends(get_board_service)],
 ) -> BoardModel:
     board = service.get_board(board_id)
