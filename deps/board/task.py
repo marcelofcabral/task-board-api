@@ -4,7 +4,8 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import TaskModel
+from deps.board.board import get_authorized_board_or_404
+from models import BoardModel, TaskModel
 from repositories import TaskRepository
 from services import TaskService
 
@@ -36,3 +37,10 @@ def get_all_tasks(
     service: Annotated[TaskService, Depends(get_task_service)],
 ) -> list[TaskModel]:
     return service.list_tasks()
+
+
+def get_all_board_tasks(
+    board: Annotated[BoardModel, Depends(get_authorized_board_or_404)],
+    service: Annotated[TaskService, Depends(get_task_service)],
+) -> list[TaskModel]:
+    return service.get_all_board_tasks(board.id)
