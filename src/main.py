@@ -1,12 +1,9 @@
 from fastapi import FastAPI
 
 from admin import setup_admin
-from database import Base, engine
 from routes.auth import router as auth_router
 from routes.boards.boards import router as board_router
 from routes.users import router as user_router
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 

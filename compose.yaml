@@ -1,0 +1,47 @@
+services:
+  # volumes are owned by root when created. This service changes ownership of the volume to
+  # the nonroot user used by Docker containers. This change survives the removal of the container
+  # since the ownership data is stored as metadata inside the volume.
+  init-data:
+    image: dhi.io/python:3.14-debian-dev
+    user: "root"
+    volumes:
+      - app-data:/app/data
+    command: ["sh", "-c", "chown 65532:65532 /app/data"]
+    restart: "no"
+
+  # this service depends on init-data and runs the Alembic migrations as the nonroot user,
+  # creating/updating the DB on the volume whose ownership was changed to the nonroot user
+  # by the init-data service.
+  migrate:
+    build: .
+    depends_on:
+      init-data:
+        condition: service_completed_successfully
+    command: [".venv/bin/alembic", "upgrade", "head"]
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:////app/data/models.db}
+    volumes:
+      - app-data:/app/data
+    restart: "no"
+
+  # this is the actual app service that starts the container which will run the FastAPI server.
+  # At this point, the volume is already writeable by the nonroot user and the database structure
+  # has already been created/updated.
+  app:
+    build: .
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - ${APP_PORT}:8000
+    environment:
+      - ACCESS_TOKEN_EXPIRY_MINUTES=${ACCESS_TOKEN_EXPIRY_MINUTES}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:////app/data/models.db}
+    volumes:
+      - app-data:/app/data
+
+volumes:
+  app-data:

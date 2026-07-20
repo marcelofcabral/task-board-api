@@ -23,9 +23,8 @@ class BoardService:
         new_board = self.repository.add_board(board)
 
         self.board_member_service.add_board_member(
-            BoardMemberCreate(
-                user_id=creator_id, board_id=new_board.id, role=BoardMemberRole.EDITOR
-            )
+            BoardMemberCreate(user_id=creator_id, role=BoardMemberRole.EDITOR),
+            board_id=new_board.id,
         )
 
         # commits both changes to DB in a single transaction (db session is shared for the request)
