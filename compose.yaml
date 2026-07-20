@@ -1,28 +1,32 @@
 services:
-  # volumes are owned by root when created. This service changes ownership of the volume to
-  # the nonroot user used by Docker containers. This change survives the removal of the container
-  # since the ownership data is stored as metadata inside the volume.
-  init-data:
-    image: dhi.io/python:3.14-debian-dev
-    user: "root"
+  # sets up the container that will run PostgreSQL with a healthcheck that
+  # the migrate service will depend on.
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - app-data:/app/data
-    command: ["sh", "-c", "chown 65532:65532 /app/data"]
-    restart: "no"
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: "always"
 
-  # this service depends on init-data and runs the Alembic migrations as the nonroot user,
+  # this service depends on db and runs the Alembic migrations as the nonroot user,
   # creating/updating the DB on the volume whose ownership was changed to the nonroot user
   # by the init-data service.
   migrate:
     build: .
     depends_on:
-      init-data:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
     command: [".venv/bin/alembic", "upgrade", "head"]
     environment:
-      - DATABASE_URL=${DATABASE_URL:-sqlite:////app/data/models.db}
-    volumes:
-      - app-data:/app/data
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg://taskboard:taskboard@db:5432/taskboard}
     restart: "no"
 
   # this is the actual app service that starts the container which will run the FastAPI server.
@@ -39,9 +43,7 @@ services:
       - ACCESS_TOKEN_EXPIRY_MINUTES=${ACCESS_TOKEN_EXPIRY_MINUTES}
       - JWT_ALGORITHM=${JWT_ALGORITHM}
       - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=${DATABASE_URL:-sqlite:////app/data/models.db}
-    volumes:
-      - app-data:/app/data
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg://taskboard:taskboard@db:5432/taskboard}
 
 volumes:
-  app-data:
+  pg-data:

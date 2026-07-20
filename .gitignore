@@ -37,11 +37,6 @@ ENV/
 .env.*
 !.env.example
 
-# Local SQLite database (see database.py / alembic.ini)
-*.db
-*.sqlite
-*.sqlite3
-
 # PyInstaller
 *.manifest
 *.spec
