@@ -4,7 +4,7 @@ from typing import TypedDict
 import jwt
 from pwdlib import PasswordHash
 
-from .constants import ACCESS_TOKEN_EXPIRY_MINUTES, ALGORITHM, SECRET_KEY
+from env_vars import ACCESS_TOKEN_EXPIRY_MINUTES, ALGORITHM, SECRET_KEY
 
 password_hasher = PasswordHash.recommended()
 

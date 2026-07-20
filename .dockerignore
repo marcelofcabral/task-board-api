@@ -117,4 +117,4 @@ pyrightconfig.json
 # Docker files (avoids adding them to the build context accidentally)
 Dockerfile
 .dockerignore
-docker-compose*.yml
+compose.yml
