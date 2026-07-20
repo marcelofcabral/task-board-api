@@ -20,6 +20,7 @@ class BoardRepository:
 
         self.db.add(new_board)
         self.db.flush()
+        self.db.refresh(new_board)
 
         return new_board
 
