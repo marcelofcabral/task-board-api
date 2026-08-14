@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from .common import ResponseSchemaBase
+from .common import ResponseDTOBase
 
 
 class TaskBase(BaseModel):
@@ -19,5 +19,5 @@ class TaskUpdate(BaseModel):
     user_id: int | None = None
 
 
-class TaskResponse(TaskBase, ResponseSchemaBase):
+class TaskResponse(TaskBase, ResponseDTOBase):
     id: int

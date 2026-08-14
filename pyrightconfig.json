@@ -1,6 +1,6 @@
 {
-  "include": ["."],
-  "extraPaths": ["."],
+  "include": ["src"],
+  "extraPaths": ["src"],
   "venvPath": ".",
   "venv": ".venv",
   "pythonVersion": "3.14",

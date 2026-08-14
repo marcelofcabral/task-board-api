@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from dtos import UserCreate
+from dtos.user import UserUpdate
 from models import UserModel
-from schemas import UserCreate
-from schemas.user import UserUpdate
 
 
 class UserRepository:

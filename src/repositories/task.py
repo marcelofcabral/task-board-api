@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from dtos import TaskCreate, TaskUpdate
 from models import TaskModel
-from schemas import TaskCreate, TaskUpdate
 
 
 class TaskRepository:

@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from dtos import BoardMemberCreate, BoardMemberUpdate
 from models import BoardMemberModel
-from schemas import BoardMemberCreate, BoardMemberUpdate
 from shared.types.board_member import BoardMemberRole
 
 
@@ -64,7 +64,7 @@ class BoardMemberRepository:
     def update_board_member(
         self, board_member: BoardMemberModel, updates: BoardMemberUpdate
     ) -> BoardMemberModel:
-        setattr(board_member, "role", updates.role)
+        board_member.role = updates.role
 
         self.db.commit()
         self.db.refresh(board_member)

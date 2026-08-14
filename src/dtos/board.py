@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from .common import ResponseSchemaBase
+from .common import ResponseDTOBase
 
 
 class BoardBase(BaseModel):
@@ -15,5 +15,5 @@ class BoardUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=50)
 
 
-class BoardResponse(BoardBase, ResponseSchemaBase):
+class BoardResponse(BoardBase, ResponseDTOBase):
     pass

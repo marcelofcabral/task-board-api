@@ -1,5 +1,5 @@
 from pydantic import ConfigDict
 
 
-class ResponseSchemaBase:
+class ResponseDTOBase:
     model_config = ConfigDict(from_attributes=True)

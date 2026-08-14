@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from dtos import BoardCreate, BoardUpdate
 from models import BoardModel
-from schemas import BoardCreate, BoardUpdate
 
 
 class BoardRepository:

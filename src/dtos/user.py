@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from .common import ResponseSchemaBase
+from .common import ResponseDTOBase
 
 
 class UserBase(BaseModel):
@@ -22,5 +22,5 @@ class UserUpdate(BaseModel):
 
 
 # excludes the hashed password from the response body via the routes' response_model
-class UserResponse(UserBase, ResponseSchemaBase):
+class UserResponse(UserBase, ResponseDTOBase):
     pass
