@@ -2,13 +2,20 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
+from application.inputs.create_board_task_input import CreateBoardTaskInput
+from application.use_cases.create_board_task import CreateBoardTaskUseCase
 from deps.board.member import (
     get_auth_board_member_or_403,
     require_board_member_editor_role,
 )
-from deps.board.task import get_all_board_tasks, get_task_or_404, get_task_service
+from deps.board.task import (
+    get_all_board_tasks,
+    get_create_board_task_use_case,
+    get_task_or_404,
+    get_task_service,
+)
+from dtos import TaskCreate, TaskResponse, TaskUpdate
 from models import TaskModel
-from schemas import TaskCreate, TaskResponse, TaskUpdate
 from services.task import TaskService
 
 router = APIRouter(
@@ -39,11 +46,15 @@ async def read_board_task(task: Annotated[TaskModel, Depends(get_task_or_404)]):
     dependencies=[Depends(require_board_member_editor_role)],
 )
 async def create_task(
-    task: TaskCreate,
+    creation_dto: TaskCreate,
     board_id: int,
-    service: Annotated[TaskService, Depends(get_task_service)],
+    use_case: Annotated[
+        CreateBoardTaskUseCase, Depends(get_create_board_task_use_case)
+    ],
 ):
-    return service.create_board_task(task, board_id)
+    input = CreateBoardTaskInput(**creation_dto.model_dump(), board_id=board_id)
+
+    return use_case.execute(input)
 
 
 # Update board task

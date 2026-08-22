@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from models.associations.board_member import BoardMemberModel
 from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
-from models.associations.board_member import BoardMemberModel
 
 if TYPE_CHECKING:
     from .task import TaskModel

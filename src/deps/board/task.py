@@ -3,21 +3,23 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from application.ports.task_repository_port import TaskRepositoryPort
+from application.use_cases.create_board_task import CreateBoardTaskUseCase
 from database import get_db
 from deps.board.board import get_authorized_board_or_404
+from infra.adapters.sqlalchemy_task_repository import SqlAlchemyTaskRepository
 from models import BoardModel, TaskModel
-from repositories import TaskRepository
 from services import TaskService
 
 
-def get_task_repository(db: Annotated[Session, Depends(get_db)]) -> TaskRepository:
-    return TaskRepository(db)
+def get_task_repository(db: Annotated[Session, Depends(get_db)]) -> TaskRepositoryPort:
+    return SqlAlchemyTaskRepository(db)
 
 
-def get_task_service(
-    repository: Annotated[TaskRepository, Depends(get_task_repository)],
-) -> TaskService:
-    return TaskService(repository)
+def get_create_board_task_use_case(
+    repository: Annotated[TaskRepositoryPort, Depends(get_task_repository)],
+) -> CreateBoardTaskUseCase:
+    return CreateBoardTaskUseCase(repository)
 
 
 def get_task_or_404(

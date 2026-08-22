@@ -24,7 +24,9 @@ class TaskModel(Base):
         ForeignKey("boards.id"), nullable=False, index=True
     )
     title: Mapped[str] = mapped_column(String(100), nullable=False)
-    description: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    description: Mapped[str | None] = mapped_column(
+        String(200), nullable=True, default=None
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime, insert_default=datetime.now, nullable=False
     )
