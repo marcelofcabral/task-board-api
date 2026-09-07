@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 
+from application.usecases.board.list_boards_usecase import ListBoardsUseCase
 from deps.board.member import get_auth_board_member_or_403
 from deps.service_factories import get_board_service
 from models import BoardMemberModel, BoardModel
@@ -26,6 +27,6 @@ def get_authorized_board_or_404(
 
 
 def get_all_boards(
-    service: Annotated[BoardService, Depends(get_board_service)],
+    list_boards_usecase: Annotated[ListBoardsUseCase, Depends(get_board_service)],
 ) -> list[BoardModel]:
     return service.list_boards()
