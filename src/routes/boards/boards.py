@@ -9,8 +9,8 @@ from deps.board.board import (
     get_board_service,
 )
 from deps.board.member import require_board_member_editor_role
+from dtos import BoardCreate, BoardResponse
 from models import BoardModel, UserModel
-from schemas import BoardCreate, BoardResponse, BoardUpdate
 from services.board import BoardService
 
 from .members import router as members_router

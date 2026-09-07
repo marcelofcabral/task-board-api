@@ -12,6 +12,7 @@ class UserModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     birth: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(20), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, insert_default=datetime.now, nullable=False
     )

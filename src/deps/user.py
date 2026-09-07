@@ -3,14 +3,18 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from application.ports.user_repository_port import UserRepositoryPort
 from database import get_db
+from infra.adapters.sqlalchemy_user_repository import SqlAlchemyUserRepository
 from models import UserModel
 from repositories import UserRepository
 from services import UserService
 
 
-def get_user_repository(db: Annotated[Session, Depends(get_db)]) -> UserRepository:
-    return UserRepository(db)
+def get_user_repository(
+    db: Annotated[Session, Depends(get_db)],
+) -> UserRepositoryPort:
+    return SqlAlchemyUserRepository(db)
 
 
 def get_user_service(

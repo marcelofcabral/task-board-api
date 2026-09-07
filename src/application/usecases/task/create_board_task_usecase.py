@@ -1,4 +1,4 @@
-from application.inputs.create_board_task_input import CreateBoardTaskInput
+from application.inputs.task.create_board_task_input import CreateBoardTaskInput
 from application.ports.task_repository_port import TaskRepositoryPort
 from domain.entities.task_entity import TaskEntity
 from domain.value_objects.task.new_task import NewTask

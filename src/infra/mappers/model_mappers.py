@@ -23,7 +23,7 @@ def apply_patch_to_model(
     column_names = db_model.__table__.columns.keys()
 
     for name in column_names:
-        if name in exclude_from_update:
+        if name in exclude_from_update or getattr(patch_value_object, name) is None:
             continue
 
         attribute_value = getattr(patch_value_object, name)

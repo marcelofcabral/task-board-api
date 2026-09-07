@@ -15,11 +15,11 @@ class SqlAlchemyTaskRepository(TaskRepositoryPort):
     def __init__(self, db: Session):
         self.db = db
 
-    def get_task(self, id: int) -> TaskEntity:
+    def get_task(self, id: int) -> TaskEntity | None:
         db_task = self.db.get(TaskModel, id)
 
         if db_task is None:
-            raise TaskNotFoundException(id)
+            return None
 
         return to_entity(db_task, TaskEntity)
 
@@ -72,11 +72,11 @@ class SqlAlchemyTaskRepository(TaskRepositoryPort):
 
         return to_entity(db_task, TaskEntity)
 
-    def delete_task(self, id: int) -> None:
-        db_task = self.db.get(TaskModel, id)
+    def delete_task(self, task_id: int) -> None:
+        db_task = self.db.get(TaskModel, task_id)
 
         if not db_task:
-            raise TaskNotFoundException(id)
+            raise TaskNotFoundException(task_id)
 
         self.db.delete(db_task)
         self.db.commit()

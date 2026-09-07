@@ -1,8 +1,8 @@
 from typing import NamedTuple
 
-from models import UserModel
+from domain.entities.user_entity import UserEntity
 
 
 class LoginResult(NamedTuple):
-    user: UserModel
+    user: UserEntity
     token: str
