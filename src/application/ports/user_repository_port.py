@@ -1,9 +1,11 @@
+from abc import ABC
+
 from domain.entities.user_entity import UserEntity
 from domain.value_objects.user.new_user import NewUser
 from domain.value_objects.user.user_patch import UserPatch
 
 
-class UserRepositoryPort:
+class UserRepositoryPort(ABC):
     def get_user(self, id: int) -> UserEntity | None: ...
     def get_user_by_username(self, username: str) -> UserEntity | None: ...
     def get_users_by_ids(self, ids: list[int]) -> list[UserEntity]: ...

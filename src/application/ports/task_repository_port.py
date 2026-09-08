@@ -1,9 +1,11 @@
+from abc import ABC
+
 from domain.entities.task_entity import TaskEntity
 from domain.value_objects.task.new_task import NewTask
 from domain.value_objects.task.task_patch import TaskPatch
 
 
-class TaskRepositoryPort:
+class TaskRepositoryPort(ABC):
     def get_task(self, id: int) -> TaskEntity: ...
     def get_all_board_member_tasks(
         self, board_id: int, user_id: int

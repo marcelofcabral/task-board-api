@@ -1,9 +1,11 @@
+from abc import ABC
+
 from domain.entities.board_entity import BoardEntity
 from domain.value_objects.board.board_patch import BoardPatch
 from domain.value_objects.board.new_board import NewBoard
 
 
-class BoardRepositoryPort:
+class BoardRepositoryPort(ABC):
     def get_board(self, id: int) -> BoardEntity | None: ...
     def get_board_by_title(self, title: str) -> BoardEntity | None: ...
     def list_boards(self) -> list[BoardEntity]: ...
