@@ -5,5 +5,6 @@ from shared.types.board_member import BoardMemberRole
 
 @dataclass
 class BoardMemberPatch:
-    id: int
+    user_id: int
+    board_id: int
     role: BoardMemberRole

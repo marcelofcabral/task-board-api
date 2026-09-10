@@ -6,6 +6,10 @@ from application.ports.board_repository_port import BoardRepositoryPort
 from application.ports.user_repository_port import UserRepositoryPort
 from domain.entities.board_member_entity import BoardMemberEntity
 from domain.exceptions.board import BoardNotFoundException
+from domain.exceptions.board_member import (
+    BoardMemberAlreadyExistsException,
+    BoardMemberNotFound,
+)
 from domain.exceptions.user import UserNotFoundException
 from domain.value_objects.board_member.board_member_patch import BoardMemberPatch
 from domain.value_objects.board_member.new_board_member import NewBoardMember
@@ -65,31 +69,17 @@ class BoardMemberRepository(BoardMemberRepositoryPort):
 
         if not user:
             raise UserNotFoundException(user_id)
-        
-    def _ensure_user_not_member_of_board(self, board_id: int, user_id: int) -> None:
-        # TODO: lookup board member, raise if exists
 
-    # does not commit. Used by CreateBoardUseCase when creating a board and adding the creator as editor
+    def _ensure_user_not_member_of_board(self, board_id: int, user_id: int) -> None:
+        if self.get_board_member(user_id, board_id) is not None:
+            raise BoardMemberAlreadyExistsException(user_id, board_id)
+
     def add_board_member(self, new_board_member: NewBoardMember) -> BoardMemberEntity:
         self._ensure_board_and_user_exist(
             new_board_member.board_id, new_board_member.user_id
         )
 
-        new_db_board_member = BoardMemberModel(
-            board_id=new_board_member.board_id,
-            user_id=new_board_member.user_id,
-            role=new_board_member.role,
-        )
-
-        self.db.add(new_db_board_member)
-
-        return to_entity(new_db_board_member, BoardMemberEntity)
-
-    # commits
-    def create_board_member(
-        self, new_board_member: NewBoardMember
-    ) -> BoardMemberEntity:
-        self._ensure_board_and_user_exist(
+        self._ensure_user_not_member_of_board(
             new_board_member.board_id, new_board_member.user_id
         )
 
@@ -100,11 +90,43 @@ class BoardMemberRepository(BoardMemberRepositoryPort):
         )
 
         self.db.add(new_db_board_member)
-        self.db.commit()
-        
+        self.db.flush()
+        self.db.refresh(new_db_board_member)
+
+        return to_entity(new_db_board_member, BoardMemberEntity)
 
     def update_board_member(
         self, board_member_patch: BoardMemberPatch
-    ) -> BoardMemberEntity: ...
+    ) -> BoardMemberEntity:
+        db_board_member = self.db.get(
+            BoardMemberModel,
+            {
+                "user_id": board_member_patch.user_id,
+                "board_id": board_member_patch.board_id,
+            },
+        )
 
-    def delete_board_member(self, board_member_id: int) -> None: ...
+        if not db_board_member:
+            raise BoardMemberNotFound(
+                board_member_patch.user_id, board_member_patch.board_id
+            )
+
+        db_board_member.role = board_member_patch.role
+
+        self.db.commit()
+
+        return to_entity(db_board_member, BoardMemberEntity)
+
+    def delete_board_member(self, user_id: int, board_id: int) -> None:
+        db_board_member = self.db.get(
+            BoardMemberModel,
+            {
+                "user_id": user_id,
+                "board_id": board_id,
+            },
+        )
+
+        if not db_board_member:
+            raise BoardMemberNotFound(user_id, board_id)
+
+        self.db.delete(db_board_member)

@@ -1,0 +1,6 @@
+from abc import ABC
+
+
+class UnitOfWorkPort(ABC):
+    def commit(self) -> None: ...
+    def rollback(self) -> None: ...

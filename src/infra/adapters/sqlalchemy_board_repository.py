@@ -12,7 +12,10 @@ from models import BoardModel
 
 
 class SqlAlchemyBoardRepository(BoardRepositoryPort):
-    def __init__(self, db: Session) -> None:
+    def __init__(
+        self,
+        db: Session,
+    ) -> None:
         self.db = db
 
     def get_board(self, id: int) -> BoardEntity | None:
@@ -40,11 +43,12 @@ class SqlAlchemyBoardRepository(BoardRepositoryPort):
 
         return to_entities(db_boards, BoardEntity)
 
-    def create_board(self, new_board: NewBoard) -> BoardEntity:
+    def add_board(self, new_board: NewBoard, creator_id: int) -> BoardEntity:
         db_board = BoardModel(title=new_board.title)
 
-        # TODO: add creation of board member logic here
-        # TODO: do not forget to commit them in the same transaction
+        self.db.add(db_board)
+        self.db.flush()
+        self.db.refresh(db_board)
 
         return to_entity(db_board, BoardEntity)
 
@@ -69,5 +73,3 @@ class SqlAlchemyBoardRepository(BoardRepositoryPort):
 
         self.db.delete(db_board)
         self.db.commit()
-
-    def commit(self) -> None: ...
