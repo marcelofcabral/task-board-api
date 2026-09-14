@@ -1,7 +1,5 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
-
 from deps.board.member import (
     ensure_board_member_does_not_exist,
     get_all_board_members,
@@ -9,14 +7,16 @@ from deps.board.member import (
     get_board_member_or_404,
     require_board_member_editor_role,
 )
-from deps.service_factories import get_board_member_service
-from models import BoardMemberModel, UserModel
+from fastapi import APIRouter, Depends, status
 from schemas import (
     BoardMemberCreate,
     BoardMemberResponse,
     BoardMemberUpdate,
     UserResponse,
 )
+
+from deps.service_factories import get_board_member_service
+from models import BoardMemberModel, UserModel
 from services import BoardMemberService
 
 router = APIRouter(
@@ -58,6 +58,11 @@ async def create_board_member(
         BoardMemberService, Depends(get_board_member_service)
     ],
 ):
+    if board_member:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="User already is a board member",
+        )
     return board_member_service.create_board_member(member, board_id)
 
 

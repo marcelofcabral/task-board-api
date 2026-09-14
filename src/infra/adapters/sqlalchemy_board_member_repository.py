@@ -2,15 +2,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from application.ports.board_member_repository_port import BoardMemberRepositoryPort
-from application.ports.board_repository_port import BoardRepositoryPort
-from application.ports.user_repository_port import UserRepositoryPort
 from domain.entities.board_member_entity import BoardMemberEntity
-from domain.exceptions.board import BoardNotFoundException
 from domain.exceptions.board_member import (
-    BoardMemberAlreadyExistsException,
-    BoardMemberNotFound,
+    BoardMemberNotFoundException,
 )
-from domain.exceptions.user import UserNotFoundException
 from domain.value_objects.board_member.board_member_patch import BoardMemberPatch
 from domain.value_objects.board_member.new_board_member import NewBoardMember
 from infra.mappers.entity_mappers import to_entities, to_entity
@@ -18,16 +13,12 @@ from infra.models import BoardMemberModel
 from shared.types.board_member import BoardMemberRole
 
 
-class BoardMemberRepository(BoardMemberRepositoryPort):
+class SqlAlchemyBoardMemberRepository(BoardMemberRepositoryPort):
     def __init__(
         self,
         db: Session,
-        user_repo: UserRepositoryPort,
-        board_repo: BoardRepositoryPort,
     ) -> None:
         self.db = db
-        self.user_repo = user_repo
-        self.board_repo = board_repo
 
     def get_board_member(self, user_id: int, board_id: int) -> BoardMemberEntity | None:
         db_board_member = self.db.get(
@@ -59,30 +50,7 @@ class BoardMemberRepository(BoardMemberRepositoryPort):
 
         return to_entities(db_board_members, BoardMemberEntity)
 
-    def _ensure_board_and_user_exist(self, board_id: int, user_id: int) -> None:
-        board = self.board_repo.get_board(board_id)
-
-        if not board:
-            raise BoardNotFoundException(board_id)
-
-        user = self.user_repo.get_user(user_id)
-
-        if not user:
-            raise UserNotFoundException(user_id)
-
-    def _ensure_user_not_member_of_board(self, board_id: int, user_id: int) -> None:
-        if self.get_board_member(user_id, board_id) is not None:
-            raise BoardMemberAlreadyExistsException(user_id, board_id)
-
     def add_board_member(self, new_board_member: NewBoardMember) -> BoardMemberEntity:
-        self._ensure_board_and_user_exist(
-            new_board_member.board_id, new_board_member.user_id
-        )
-
-        self._ensure_user_not_member_of_board(
-            new_board_member.board_id, new_board_member.user_id
-        )
-
         new_db_board_member = BoardMemberModel(
             board_id=new_board_member.board_id,
             user_id=new_board_member.user_id,
@@ -107,7 +75,7 @@ class BoardMemberRepository(BoardMemberRepositoryPort):
         )
 
         if not db_board_member:
-            raise BoardMemberNotFound(
+            raise BoardMemberNotFoundException(
                 board_member_patch.user_id, board_member_patch.board_id
             )
 
@@ -127,6 +95,7 @@ class BoardMemberRepository(BoardMemberRepositoryPort):
         )
 
         if not db_board_member:
-            raise BoardMemberNotFound(user_id, board_id)
+            raise BoardMemberNotFoundException(user_id, board_id)
 
         self.db.delete(db_board_member)
+        self.db.commit()

@@ -7,7 +7,7 @@ class BoardMemberAlreadyExistsException(Exception):
         )
 
 
-class BoardMemberNotFound(Exception):
+class BoardMemberNotFoundException(Exception):
     def __init__(self, user_id: int, board_id: int):
         self.user_id = user_id
         self.board_id = board_id

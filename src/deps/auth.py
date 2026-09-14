@@ -5,12 +5,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from application.ports.user_repository_port import UserRepositoryPort
 from application.usecases.auth.get_auth_user_usecase import GetAuthUserUseCase
+from application.usecases.auth.login_user_usecase import LoginUserUseCase
 from auth import oauth2_scheme
 from auth.types import LoginResult
 from deps.user import get_user_repository
 from domain.entities.user_entity import UserEntity
 from domain.exceptions.auth import InvalidTokenException
-from services import AuthService
 
 
 def get_unauthorized_exception(detail: str):
@@ -27,18 +27,22 @@ def get_get_auth_user_usecase(
     return GetAuthUserUseCase(user_repo)
 
 
+def get_login_user_usecase(
+    user_repo: Annotated[UserRepositoryPort, Depends(get_user_repository)],
+) -> LoginUserUseCase:
+    return LoginUserUseCase(user_repo)
+
+
 def get_login_data(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+    login_user_usecase: Annotated[LoginUserUseCase, Depends(get_login_user_usecase)],
 ) -> LoginResult:
-    login_result = auth_service.login(form_data)
+    login_result = login_user_usecase.execute(form_data)
 
     if not login_result:
         raise get_unauthorized_exception("Invalid username or password")
 
-    user, token = login_result
-
-    return LoginResult(user, token)
+    return login_result
 
 
 def get_auth_user(
