@@ -16,6 +16,6 @@ COPY --from=build-stage /app/.venv .venv
 COPY src ./src
 COPY alembic.ini .
 
-EXPOSE 8000
+EXPOSE 8888
 
-CMD [".venv/bin/fastapi", "run", "src/main.py", "--host", "0.0.0.0", "--port", "8000"]
+CMD [".venv/bin/fastapi", "run", "src/main.py", "--host", "0.0.0.0", "--port", "8888"]

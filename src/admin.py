@@ -1,7 +1,7 @@
 from sqladmin import Admin, ModelView
 
 from database import engine
-from models import BoardMemberModel, BoardModel, TaskModel, UserModel
+from infra.models import BoardMemberModel, BoardModel, TaskModel, UserModel
 
 
 class UserModelAdmin(ModelView, model=UserModel):

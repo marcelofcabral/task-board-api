@@ -12,3 +12,7 @@
 ## QA
 
 - [ ] Add tests.
+
+## Refactoring into Hexagonal Architecture
+
+- [ ] Refactor the HTTP/deps layer with the new DTOs
