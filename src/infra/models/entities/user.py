@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from models.associations.board_member import BoardMemberModel
+from infra.models.associations.board_member import BoardMemberModel
 from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -24,5 +24,9 @@ class UserModel(Base):
         DateTime, insert_default=datetime.now, nullable=False
     )
 
-    tasks: Mapped[list[TaskModel]] = relationship(back_populates="user")
-    memberships: Mapped[list[BoardMemberModel]] = relationship(back_populates="user")
+    tasks: Mapped[list[TaskModel]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    memberships: Mapped[list[BoardMemberModel]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )

@@ -10,6 +10,7 @@ def to_model[M: Base](value_object: object, db_model_cls: type[M]) -> M:
     kwargs_dict = {
         col_name: getattr(value_object, col_name)
         for col_name in db_model_cls.__table__.columns.keys()  # noqa: SIM118 - columns is not a dict
+        if hasattr(value_object, col_name)
     }
 
     return db_model_cls(**kwargs_dict)

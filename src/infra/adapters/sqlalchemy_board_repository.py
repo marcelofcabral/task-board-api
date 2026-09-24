@@ -8,7 +8,7 @@ from domain.value_objects.board.board_patch import BoardPatch
 from domain.value_objects.board.new_board import NewBoard
 from infra.mappers.entity_mappers import to_entities, to_entity
 from infra.mappers.model_mappers import apply_patch_to_model
-from models import BoardModel
+from infra.models import BoardModel
 
 
 class SqlAlchemyBoardRepository(BoardRepositoryPort):
@@ -43,7 +43,7 @@ class SqlAlchemyBoardRepository(BoardRepositoryPort):
 
         return to_entities(db_boards, BoardEntity)
 
-    def add_board(self, new_board: NewBoard, creator_id: int) -> BoardEntity:
+    def add_board(self, new_board: NewBoard) -> BoardEntity:
         db_board = BoardModel(title=new_board.title)
 
         self.db.add(db_board)

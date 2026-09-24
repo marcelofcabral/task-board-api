@@ -9,8 +9,8 @@ from database import Base
 from shared.types.board_member import BoardMemberRole
 
 if TYPE_CHECKING:
-    from models.entities.board import BoardModel
-    from models.entities.user import UserModel
+    from infra.models.entities.board import BoardModel
+    from infra.models.entities.user import UserModel
 
 
 class BoardMemberModel(Base):

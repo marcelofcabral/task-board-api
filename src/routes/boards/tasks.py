@@ -2,8 +2,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
-from application.inputs.create_board_task_input import CreateBoardTaskInput
-from application.use_cases.create_board_task import CreateBoardTaskUseCase
+from application.inputs.task.create_board_task_input import CreateBoardTaskInput
+from application.inputs.task.update_board_task_input import UpdateBoardTaskInput
+from application.ports.task_repository_port import TaskRepositoryPort
+from application.usecases.task.create_board_task_usecase import CreateBoardTaskUseCase
+from application.usecases.task.update_board_task_usecase import UpdateBoardTaskUseCase
 from deps.board.member import (
     get_auth_board_member_or_403,
     require_board_member_editor_role,
@@ -12,11 +15,11 @@ from deps.board.task import (
     get_all_board_tasks,
     get_create_board_task_use_case,
     get_task_or_404,
-    get_task_service,
+    get_task_repository,
+    get_update_board_task_use_case,
 )
+from domain.entities.task_entity import TaskEntity
 from dtos import TaskCreate, TaskResponse, TaskUpdate
-from models import TaskModel
-from services.task import TaskService
 
 router = APIRouter(
     prefix="/{board_id}/tasks",
@@ -27,14 +30,14 @@ router = APIRouter(
 # Read all board tasks
 @router.get("", response_model=list[TaskResponse])
 async def read_all_board_tasks(
-    tasks: Annotated[list[TaskModel], Depends(get_all_board_tasks)],
+    tasks: Annotated[list[TaskEntity], Depends(get_all_board_tasks)],
 ):
     return tasks
 
 
 # Read a board task
 @router.get("/{id}", response_model=TaskResponse)
-async def read_board_task(task: Annotated[TaskModel, Depends(get_task_or_404)]):
+async def read_board_task(task: Annotated[TaskEntity, Depends(get_task_or_404)]):
     return task
 
 
@@ -52,9 +55,9 @@ async def create_task(
         CreateBoardTaskUseCase, Depends(get_create_board_task_use_case)
     ],
 ):
-    input = CreateBoardTaskInput(**creation_dto.model_dump(), board_id=board_id)
-
-    return use_case.execute(input)
+    return use_case.execute(
+        CreateBoardTaskInput(**creation_dto.model_dump(), board_id=board_id)
+    )
 
 
 # Update board task
@@ -64,17 +67,27 @@ async def create_task(
     dependencies=[Depends(require_board_member_editor_role)],
 )
 async def update_task(
-    task: Annotated[TaskModel, Depends(get_task_or_404)],
+    task: Annotated[TaskEntity, Depends(get_task_or_404)],
     updates: TaskUpdate,
-    service: Annotated[TaskService, Depends(get_task_service)],
+    update_board_task_usecase: Annotated[
+        UpdateBoardTaskUseCase, Depends(get_update_board_task_use_case)
+    ],
 ):
-    return service.update_task(task, updates)
+    return update_board_task_usecase.execute(
+        UpdateBoardTaskInput(
+            task_id=task.id,
+            user_id=updates.user_id,
+            title=updates.title,
+            board_id=task.board_id,
+            description=updates.description,
+        )
+    )
 
 
 # Delete board task
 @router.delete("/{id}", dependencies=[Depends(require_board_member_editor_role)])
 async def delete_task(
-    task: Annotated[TaskModel, Depends(get_task_or_404)],
-    service: Annotated[TaskService, Depends(get_task_service)],
+    task: Annotated[TaskEntity, Depends(get_task_or_404)],
+    repository: Annotated[TaskRepositoryPort, Depends(get_task_repository)],
 ):
-    return service.delete_task(task)
+    return repository.delete_task(task.id)

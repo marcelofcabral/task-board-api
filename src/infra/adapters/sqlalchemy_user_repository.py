@@ -8,7 +8,7 @@ from domain.value_objects.user.new_user import NewUser
 from domain.value_objects.user.user_patch import UserPatch
 from infra.mappers.entity_mappers import to_entities, to_entity
 from infra.mappers.model_mappers import apply_patch_to_model
-from models import UserModel
+from infra.models import UserModel
 
 
 class SqlAlchemyUserRepository(UserRepositoryPort):

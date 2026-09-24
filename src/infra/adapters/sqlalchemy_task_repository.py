@@ -50,7 +50,7 @@ class SqlAlchemyTaskRepository(TaskRepositoryPort):
 
         return to_entities(db_tasks, TaskEntity)
 
-    def create_new_board_task(self, new_task: NewTask) -> TaskEntity:
+    def create_board_task(self, new_task: NewTask) -> TaskEntity:
         new_db_task = to_model(new_task, TaskModel)
 
         self.db.add(new_db_task)
